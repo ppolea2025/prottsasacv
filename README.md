@@ -105,6 +105,28 @@ o el ejecutivo ya conocen el código de memoria.
 
 ---
 
+## CANTIDADES EN PRODUCTOS POR MILLAR (compra parcial)
+
+Para productos con `unidad:millar`, el sistema acepta cantidades en **decimales**,
+porque muchos clientes compran menos de un millar completo (ej. 100, 250 o 350
+piezas en vez de 1,000).
+
+- Al agregar el producto, la cantidad inicial es **0.100 millares (100 piezas)**.
+- Los botones **+ / −** avanzan de 100 en 100 piezas.
+- Hay un campo numérico editable donde se puede **teclear directamente la
+  cantidad de piezas** (ej. escribir `350` ahí pone 0.350 millares).
+- En pantalla, en el pedido, en WhatsApp y en el PDF siempre se muestran
+  **ambas unidades**: `0.350 millares (350 pzs)` — así no hay confusión
+  entre el cliente y el área comercial.
+- El precio y el escalón de mayoreo se calculan de forma proporcional y
+  exacta sobre la cantidad real (decimales incluidos) — no hay redondeos
+  que afecten el total.
+
+Los productos con `unidad:pieza` no se ven afectados por este cambio —
+siguen funcionando con números enteros, de 1 en 1, como siempre.
+
+---
+
 ## MODO DE ATENCIÓN (Distribuidor vs Ejecutivo)
 
 En la parte superior de la app hay un selector de **Modo de atención**:

@@ -47,7 +47,7 @@ dialogo: ¿Para qué tipo de ensamble necesitas el tornillo hexagonal?
 descripcion: Tuercas hexagonales estándar y de seguridad.
 dialogo: ¿Necesitas tuerca hexagonal estándar o tuerca de seguridad (con nylon)?
 
-- PRODUCTO: Tuerca Hexagonal 1/4 pulg, Zincada | Rosca UNC estándar. | codigo:I12HX0250Z | precio:180 | mayoreo:5x165 | unidad:millar
+- PRODUCTO: Tuerca Hexagonal 1/4 pulg, Zincada | Rosca UNC estándar. | codigo:I12HX0250Z | precio:180 | mayoreo:5x165 | unidad:millar | foto:tuercas.jpg 
 - PRODUCTO: Tuerca Hexagonal 3/8 pulg, Zincada | Rosca UNC estándar. | codigo:I12HX0375Z | precio:240 | mayoreo:5x220 | unidad:millar
 - PRODUCTO: Tuerca de Seguridad (Nylock) 1/4 pulg | Con inserto de nylon, evita aflojamiento por vibración. | codigo:I12NY0250Z | precio:310 | mayoreo:5x290 | unidad:millar
 - PRODUCTO: Tuerca Cople Hexagonal 3/8" - 16 x 1 1/8" Zinc | Tuerca cople para unión y extensión de roscas, acabado zincado. | codigo:I12HCP0375X1125Z | precio:290 | mayoreo:5x270 | unidad:millar

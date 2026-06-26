@@ -197,6 +197,12 @@ header { background: var(--verde-dim); border-bottom: 3px solid var(--plata); pa
 .qty-btn { background: var(--bg2); border: none; width: 28px; height: 28px; font-size: 15px; font-weight: 700; color: var(--verde-dim); cursor: pointer; transition: background .15s; display: flex; align-items: center; justify-content: center; }
 .qty-btn:hover { background: var(--verde-18); }
 .qty-val { width: 40px; text-align: center; font-size: 13px; font-weight: 600; color: var(--texto); }
+.qty-selector-millar .qty-input-piezas { width: 56px; text-align: center; font-size: 13px; font-weight: 600; color: var(--texto); border: none; font-family: 'KernelSSK', sans-serif; background: #fff; padding: 0; -moz-appearance: textfield; }
+.qty-selector-millar .qty-input-piezas::-webkit-outer-spin-button,
+.qty-selector-millar .qty-input-piezas::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.qty-selector-millar .qty-input-piezas:focus { outline: none; background: var(--verde-18); }
+.qty-input-suffix { font-size: 10.5px; color: var(--texto-dim); padding-right: 6px; }
+.qty-millar-hint { font-size: 10.5px; color: var(--texto-dim); width: 100%; margin-top: 3px; }
 .btn-add.en-lista { background: var(--verde-18); color: var(--verde-dim); border: 1px solid var(--verde-30); }
 .lista-empty-msg { text-align: center; padding: 32px 0; font-size: 13px; color: var(--texto-dim); }
 .lista-footer-btns { padding: 14px 20px; border-top: 1px solid var(--borde); display: flex; gap: 8px; flex-wrap: wrap; }
@@ -536,9 +542,54 @@ function formatoMoneda(n) {
   return '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Genera el selector de cantidad (+/- y, para millar, un input editable con el valor en piezas).
+// onCambiarFn / onDirectaFn son los nombres de las funciones JS a invocar (cambian según contexto: catálogo normal o búsqueda).
+function renderQtySelector(nombreEscapado, cantidad, unidad, onCambiarFn, onDirectaFn, argExtra) {
+  const extra = argExtra ? `,${argExtra}` : '';
+  if (unidad === 'pieza') {
+    return `
+      <div class="qty-selector">
+        <button class="qty-btn" onclick="${onCambiarFn}('${nombreEscapado}',-1${extra})">−</button>
+        <span class="qty-val">${cantidad} ${etiquetaUnidad(unidad, cantidad>1)}</span>
+        <button class="qty-btn" onclick="${onCambiarFn}('${nombreEscapado}',1${extra})">+</button>
+      </div>`;
+  }
+  // unidad millar: input editable en piezas + botones de paso 100 piezas
+  const piezasEquiv = Math.round(cantidad * 1000);
+  return `
+    <div class="qty-selector qty-selector-millar">
+      <button class="qty-btn" onclick="${onCambiarFn}('${nombreEscapado}',-1${extra})">−</button>
+      <input type="number" class="qty-input-piezas" value="${piezasEquiv}" step="100" min="100"
+        onchange="${onDirectaFn}('${nombreEscapado}',this.value${extra})">
+      <span class="qty-input-suffix">pzs</span>
+      <button class="qty-btn" onclick="${onCambiarFn}('${nombreEscapado}',1${extra})">+</button>
+    </div>
+    <span class="qty-millar-hint">${cantidad.toFixed(3)} millares</span>`;
+}
+
 function etiquetaUnidad(unidad, plural) {
   if (unidad === 'pieza') return plural ? 'pzs' : 'pz';
   return plural ? 'millares' : 'millar';
+}
+
+// Formatea la cantidad para mostrar en pantalla.
+// Pieza: número entero simple ("25 pzs").
+// Millar: 3 decimales + equivalente en piezas entre paréntesis ("0.100 millares (100 pzs)").
+function formatoCantidad(cantidad, unidad) {
+  if (unidad === 'pieza') {
+    return `${cantidad} ${etiquetaUnidad(unidad, cantidad!==1)}`;
+  }
+  const piezasEquiv = Math.round(cantidad * 1000);
+  return `${cantidad.toFixed(3)} ${etiquetaUnidad(unidad, cantidad!==1)} (${piezasEquiv.toLocaleString('es-MX')} pzs)`;
+}
+
+// Paso de incremento de los botones +/- según unidad: millar avanza de 100 en 100 piezas (0.100), pieza de 1 en 1.
+function pasoUnidad(unidad) {
+  return unidad === 'pieza' ? 1 : 0.1;
+}
+
+function minimoUnidad(unidad) {
+  return unidad === 'pieza' ? 1 : 0.1;
 }
 
 function textoPrecio(prod) {
@@ -620,11 +671,7 @@ function renderProductos(catNombre, subNombre) {
       accionesHTML = `<button class="btn-add" disabled>Sin stock</button>${fotoBtn}`;
     } else if (enLista) {
       accionesHTML = `
-        <div class="qty-selector">
-          <button class="qty-btn" onclick="cambiarCantidad('${escapar(p.nombre)}',-1)">−</button>
-          <span class="qty-val">${enLista.cantidad} ${uLabel}</span>
-          <button class="qty-btn" onclick="cambiarCantidad('${escapar(p.nombre)}',1)">+</button>
-        </div>
+        ${renderQtySelector(escapar(p.nombre), enLista.cantidad, p.unidad, 'cambiarCantidad', 'cambiarCantidadDirecta')}
         <button class="btn-add en-lista" disabled>✓ En pedido</button>
         ${fotoBtn}`;
     } else {
@@ -753,11 +800,7 @@ function renderResultadosBusqueda(resultados, query) {
       accionesHTML = `<button class="btn-add" disabled>Sin stock</button>${fotoBtn}`;
     } else if (enLista) {
       accionesHTML = `
-        <div class="qty-selector">
-          <button class="qty-btn" onclick="cambiarCantidadBusqueda('${escapar(p.nombre)}',-1,'${query}')">−</button>
-          <span class="qty-val">${enLista.cantidad} ${uLabel}</span>
-          <button class="qty-btn" onclick="cambiarCantidadBusqueda('${escapar(p.nombre)}',1,'${query}')">+</button>
-        </div>
+        ${renderQtySelector(escapar(p.nombre), enLista.cantidad, p.unidad, 'cambiarCantidadBusqueda', 'cambiarCantidadDirectaBusqueda', `'${query}'`)}
         <button class="btn-add en-lista" disabled>✓ En pedido</button>
         ${fotoBtn}`;
     } else {
@@ -810,17 +853,39 @@ function cambiarCantidadBusqueda(nombre, delta, query) {
 // ══════════════════════════════════════════
 function agregarALista(nombre, cat, sub, precio, mayoreo, mayoreoDesde, unidad, codigo) {
   if (lista.find(i=>i.nombre===nombre)) return;
-  lista.push({ nombre, cat, sub, cantidad: 1, precio, mayoreo, mayoreoDesde, unidad, codigo: codigo||null });
+  const cantidadInicial = minimoUnidad(unidad);
+  lista.push({ nombre, cat, sub, cantidad: cantidadInicial, precio, mayoreo, mayoreoDesde, unidad, codigo: codigo||null });
   actualizarUI();
   if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre);
 }
 
-function cambiarCantidad(nombre, delta) {
+function cambiarCantidad(nombre, signo) {
   const item = lista.find(i=>i.nombre===nombre);
   if (!item) return;
-  item.cantidad = Math.max(1, item.cantidad + delta);
+  const paso = pasoUnidad(item.unidad);
+  const minimo = minimoUnidad(item.unidad);
+  // redondeo a 3 decimales para evitar errores de punto flotante (ej. 0.1 + 0.1 = 0.20000000000000004)
+  const nuevaCantidad = Math.round((item.cantidad + signo * paso) * 1000) / 1000;
+  item.cantidad = Math.max(minimo, nuevaCantidad);
   actualizarUI();
   if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre);
+}
+
+// El input editable de productos por millar captura piezas directamente (más natural para el cliente/ejecutivo).
+// Convierte piezas -> millares y guarda con 3 decimales.
+function cambiarCantidadDirecta(nombre, valorPiezas) {
+  const item = lista.find(i=>i.nombre===nombre);
+  if (!item) return;
+  let piezas = parseFloat(valorPiezas);
+  if (isNaN(piezas) || piezas < 100) piezas = 100; // mínimo 100 piezas (0.100 millares)
+  item.cantidad = Math.round(piezas) / 1000;
+  actualizarUI();
+  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre);
+}
+
+function cambiarCantidadDirectaBusqueda(nombre, valorPiezas, query) {
+  cambiarCantidadDirecta(nombre, valorPiezas);
+  buscarProducto(query);
 }
 
 function quitarDeLista(i) {
@@ -992,7 +1057,7 @@ function renderDrawer() {
     return `
     <div class="lista-item-row">
       <div>
-        <div class="li-nombre">${item.codigo ? `<span class="li-codigo">${item.codigo}</span> ` : ''}${item.nombre} ${!item.especial ? `<span class="li-qty">×${item.cantidad} ${etiquetaUnidad(item.unidad, item.cantidad>1)}</span>` : ''}</div>
+        <div class="li-nombre">${item.codigo ? `<span class="li-codigo">${item.codigo}</span> ` : ''}${item.nombre} ${!item.especial ? `<span class="li-qty">×${formatoCantidad(item.cantidad, item.unidad)}</span>` : ''}</div>
         <div class="li-cat">${item.cat} › ${item.sub}</div>
         ${tagEspecial}
         ${lineaPrecio}
@@ -1042,14 +1107,14 @@ function lineasPedido() {
       return { texto: `🔍 FUERA DE CATÁLOGO: ${i.nombre} — ${i.sub}`, subtotal: null };
     }
     const unit = precioUnitario(i, i.cantidad);
-    const u = etiquetaUnidad(i.unidad, i.cantidad>1);
+    const cantTxt = formatoCantidad(i.cantidad, i.unidad);
     if (unit != null) {
       hayPrecios = true;
       const subtotal = unit * i.cantidad;
       totalGeneral += subtotal;
-      return { texto: `${codigoTxt}${i.nombre} — ${i.cantidad} ${u} x ${formatoMoneda(unit)} = ${formatoMoneda(subtotal)}`, subtotal };
+      return { texto: `${codigoTxt}${i.nombre} — ${cantTxt} x ${formatoMoneda(unit)} = ${formatoMoneda(subtotal)}`, subtotal };
     }
-    return { texto: `${codigoTxt}${i.nombre} — ${i.cantidad} ${u}`, subtotal: null };
+    return { texto: `${codigoTxt}${i.nombre} — ${cantTxt}`, subtotal: null };
   });
 
   return { lineas, totalGeneral, hayPrecios, hayEspeciales };
@@ -1090,7 +1155,7 @@ function generarPDF() {
       <tr>
         <td style="padding:8px;border-bottom:1px solid #ddd;">${item.nombre}${especialTag}${codigoTag}</td>
         <td style="padding:8px;border-bottom:1px solid #ddd;">${item.cat} › ${item.sub}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;text-align:center;">${item.cantidad} ${etiquetaUnidad(item.unidad, item.cantidad>1)}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;text-align:center;">${formatoCantidad(item.cantidad, item.unidad)}</td>
         <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right;">${l.subtotal!=null ? formatoMoneda(l.subtotal) : 'Por confirmar'}</td>
       </tr>`;
   }).join('');
