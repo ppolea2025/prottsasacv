@@ -1255,25 +1255,51 @@ function renderBreadcrumb(itemsHTML) {
 // ══════════════════════════════════════════
 //  INICIALIZAR — cargar MD
 // ══════════════════════════════════════════
+function mostrarError(msg) {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="error-box">
+      <p>⚠️ ${msg}</p>
+      <button onclick="iniciar()" style="margin-top:14px;background:var(--verde);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-family:'KernelSSK',sans-serif;font-weight:600;cursor:pointer;">
+        🔄 Reintentar
+      </button>
+    </div>`;
+}
+
+async function fetchConTimeout(url, ms=8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    const resp = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+    return resp;
+  } catch(e) {
+    clearTimeout(timer);
+    if (e.name === 'AbortError') throw new Error('Tiempo de espera agotado (8s) — verifica que catalogo.md está en Vercel');
+    throw e;
+  }
+}
+
 async function iniciar() {
   cargarModoLocal();
   cargarListaLocal();
   cargarNotasLocal();
+  document.getElementById('mainContent').innerHTML = `
+    <div class="cargando" id="cargando">
+      <div class="spinner"></div>
+      <p>Cargando catálogo…</p>
+    </div>`;
   try {
-    const resp = await fetch(MD_URL);
-    if (!resp.ok) throw new Error('No se pudo cargar el catálogo');
+    const resp = await fetchConTimeout(MD_URL, 8000);
+    if (!resp.ok) throw new Error(`El servidor respondió ${resp.status} — verifica que catalogo.md existe en la carpeta de Vercel`);
     const texto = await resp.text();
     catalogo = parsearMD(texto);
-    if (catalogo.length===0) throw new Error('Catálogo vacío');
+    if (catalogo.length === 0) throw new Error('El catálogo.md está vacío o no tiene categorías válidas');
     renderCategorias();
     actualizarUI();
   } catch(e) {
-    document.getElementById('mainContent').innerHTML = `
-      <div class="error-box">
-        <p>⚠️ No se pudo cargar el catálogo.<br>
-        Verifica que el archivo <strong>catalogo.md</strong> esté en la misma carpeta.<br><br>
-        <small style="color:#aaa">${e.message}</small></p>
-      </div>`;
+    mostrarError(`No se pudo cargar el catálogo.<br><br>
+      <small style="color:#999">${e.message}</small><br><br>
+      <small style="color:#BBB">Verifica: catalogo.md está en la misma carpeta que index.html en Vercel, y el vercel.json tiene el header no-cache para .md</small>`);
   }
 }
 
