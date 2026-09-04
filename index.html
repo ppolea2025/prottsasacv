@@ -654,7 +654,7 @@ function renderSubcats(catNombre) {
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function renderProductos(catNombre, subNombre) {
+function renderProductos(catNombre, subNombre, scrollear=true) {
   const cat = catalogo.find(c=>c.nombre===catNombre);
   const sub = cat?.subcats.find(s=>s.nombre===subNombre);
   if (!cat||!sub) return;
@@ -713,7 +713,7 @@ function renderProductos(catNombre, subNombre) {
       ${prodsHTML}
     </div>
     ${renderCTA()}`;
-  window.scrollTo({top:0,behavior:'smooth'});
+  if (scrollear) window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function renderCTA() {
@@ -752,7 +752,7 @@ function catalogoAplanado() {
   return filas;
 }
 
-function buscarProducto(texto) {
+function buscarProducto(texto, scrollear=true) {
   const q = texto.trim().toLowerCase();
   document.getElementById('buscadorClear').style.display = q ? 'block' : 'none';
   if (!q) {
@@ -767,7 +767,7 @@ function buscarProducto(texto) {
     return enCodigo || enNombre;
   });
 
-  renderResultadosBusqueda(resultados, texto.trim());
+  renderResultadosBusqueda(resultados, texto.trim(), scrollear);
 }
 
 function limpiarBusqueda() {
@@ -776,7 +776,7 @@ function limpiarBusqueda() {
   renderCategorias();
 }
 
-function renderResultadosBusqueda(resultados, query) {
+function renderResultadosBusqueda(resultados, query, scrollear=true) {
   catActual = null; subActual = null;
   const main = document.getElementById('mainContent');
 
@@ -835,17 +835,17 @@ function renderResultadosBusqueda(resultados, query) {
       ${prodsHTML}
     </div>
     ${renderCTA()}`;
-  window.scrollTo({top:0,behavior:'smooth'});
+  if (scrollear) window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function agregarDesdeBusqueda(nombre, cat, sub, precio, mayoreo, mayoreoDesde, unidad, codigo, query) {
   agregarALista(nombre, cat, sub, precio, mayoreo, mayoreoDesde, unidad, codigo);
-  buscarProducto(query);
+  buscarProducto(query, false);
 }
 
 function cambiarCantidadBusqueda(nombre, delta, query) {
   cambiarCantidad(nombre, delta);
-  buscarProducto(query);
+  buscarProducto(query, false);
 }
 
 // ══════════════════════════════════════════
@@ -856,7 +856,7 @@ function agregarALista(nombre, cat, sub, precio, mayoreo, mayoreoDesde, unidad, 
   const cantidadInicial = minimoUnidad(unidad);
   lista.push({ nombre, cat, sub, cantidad: cantidadInicial, precio, mayoreo, mayoreoDesde, unidad, codigo: codigo||null });
   actualizarUI();
-  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre);
+  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre, false);
 }
 
 function cambiarCantidad(nombre, signo) {
@@ -868,7 +868,7 @@ function cambiarCantidad(nombre, signo) {
   const nuevaCantidad = Math.round((item.cantidad + signo * paso) * 1000) / 1000;
   item.cantidad = Math.max(minimo, nuevaCantidad);
   actualizarUI();
-  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre);
+  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre, false);
 }
 
 // El input editable de productos por millar captura piezas directamente (más natural para el cliente/ejecutivo).
@@ -880,19 +880,19 @@ function cambiarCantidadDirecta(nombre, valorPiezas) {
   if (isNaN(piezas) || piezas < 100) piezas = 100; // mínimo 100 piezas (0.100 millares)
   item.cantidad = Math.round(piezas) / 1000;
   actualizarUI();
-  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre);
+  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre, false);
 }
 
 function cambiarCantidadDirectaBusqueda(nombre, valorPiezas, query) {
   cambiarCantidadDirecta(nombre, valorPiezas);
-  buscarProducto(query);
+  buscarProducto(query, false);
 }
 
 function quitarDeLista(i) {
   lista.splice(i,1);
   actualizarUI();
   renderDrawer();
-  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre);
+  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre, false);
 }
 
 function limpiarLista() {
@@ -902,7 +902,7 @@ function limpiarLista() {
   actualizarUI();
   renderDrawer();
   toggleDrawer();
-  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre);
+  if (catActual && subActual) renderProductos(catActual.nombre, subActual.nombre, false);
 }
 
 // ══════════════════════════════════════════
