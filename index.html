@@ -651,7 +651,7 @@ function renderSubcats(catNombre) {
         </div>`).join('')}
     </div>
     ${renderCTA()}`;
-  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('mainContent').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function renderProductos(catNombre, subNombre, scrollear=true) {
@@ -713,7 +713,7 @@ function renderProductos(catNombre, subNombre, scrollear=true) {
       ${prodsHTML}
     </div>
     ${renderCTA()}`;
-  if (scrollear) window.scrollTo({top:0,behavior:'smooth'});
+  if (scrollear) document.getElementById('mainContent').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function renderCTA() {
@@ -835,7 +835,7 @@ function renderResultadosBusqueda(resultados, query, scrollear=true) {
       ${prodsHTML}
     </div>
     ${renderCTA()}`;
-  if (scrollear) window.scrollTo({top:0,behavior:'smooth'});
+  if (scrollear) document.getElementById('mainContent').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function agregarDesdeBusqueda(nombre, cat, sub, precio, mayoreo, mayoreoDesde, unidad, codigo, query) {
