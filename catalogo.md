@@ -37,7 +37,7 @@ dialogo: ¿Qué medida y longitud de tornillo Allen necesitas?
 descripcion: Tornillería hexagonal estándar para ensamble general.
 dialogo: ¿Para qué tipo de ensamble necesitas el tornillo hexagonal?
 
-- PRODUCTO: Tornillo Hexagonal 1/4 x 1 pulg, Grado 5, Zincado | Uso general, cabeza hexagonal estándar. | codigo:I12HE02501000UNC | precio:320 | mayoreo:5x300 | unidad:millar
+- PRODUCTO: Tornillo Hexagonal 1/4 x 1 pulg, Grado 5, Zincado | Uso general, cabeza hexagonal estándar. | codigo:I12HE02501000UNC | precio:320 | mayoreo:5x300 | unidad:millar | foto:tornillo-hexa.jpg
 - PRODUCTO: Tornillo Hexagonal 3/8 x 1.5 pulg, Grado 5, Zincado | Para ensamble estructural ligero. | codigo:I12HE03751500UNC | precio:520 | mayoreo:5x490 | unidad:millar
 - PRODUCTO: Tornillo Hexagonal 1/2 x 2 pulg, Grado 8, Zincado | Alta resistencia para carga. | codigo:I12HE05002000UNC | precio:980 | mayoreo:3x920 | unidad:millar
 - PRODUCTO: Tornillo Hexagonal Estructural A325 3/4"-10 UNC x 1 1/4" IM | Grado estructural A325, importado. | codigo:IA7ES07501250UNC | precio:1850 | mayoreo:3x1750 | unidad:millar
@@ -89,7 +89,7 @@ descripcion: Herramienta de uso general para taller, ferretería y obra.
 dialogo: ¿Qué herramienta manual estás buscando?
 
 - PRODUCTO: Juego de Llaves Allen Métricas (1.5-10mm) | Set de 9 piezas en estuche. | precio:185 | unidad:pieza | foto:llaves-allen.jpg
-- PRODUCTO: Llave de Cruz para Birlo, 4 Vías | Para ensamble y desensamble de birlos. | precio:320 | unidad:pieza
+- PRODUCTO: Llave de Cruz para Birlo, 4 Vías | Para ensamble y desensamble de birlos. | precio:320 | unidad:pieza | foto:llave-cruz.jpg
 - PRODUCTO: Llave Perica Ajustable 10 pulg | Acero al cromo vanadio. | precio:280 | unidad:pieza
 
 ### SUB: Herramienta de Corte
@@ -124,7 +124,7 @@ descripcion: Lámina de acero en distintos calibres y medidas.
 dialogo: ¿Qué calibre y medida de lámina necesitas? Si manejas placa o lámina especial, indícalo abajo.
 
 - PRODUCTO: Lámina Negra Calibre 18, 1.22 x 2.44 m | Acero al carbón, uso estructural. | unidad:pieza
-- PRODUCTO: Lámina Galvanizada Calibre 20, 1.22 x 2.44 m | Para uso exterior, resistente a corrosión. | unidad:pieza
+- PRODUCTO: Lámina Galvanizada Calibre 20, 1.22 x 2.44 m | Para uso exterior, resistente a corrosión. | unidad:pieza | foto:lamina-galvanizada.jpg
 
 ### SUB: Perfil y Tubería Estructural
 descripcion: Perfil PTR, ángulo y tubería de acero estructural.
